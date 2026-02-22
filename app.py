@@ -2,8 +2,74 @@ import streamlit as st
 import pandas as pd
 import pickle
 
-# Set page configuration
-st.set_page_config(page_title="Bank Loan Predictor", layout="centered")
+# Set page configuration (must be the first Streamlit command)
+st.set_page_config(page_title="Bank Loan Predictor", layout="centered", page_icon="🏦")
+
+# --- CUSTOM CSS FOR 3D ANIMATED UI ---
+page_bg_css = """
+<style>
+/* 1. Animated Gradient Background */
+.stApp {
+    background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #e94560);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 2. 3D Glassmorphism Floating Card for the Form */
+[data-testid="stForm"] {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transform: perspective(1000px) translateZ(0px) rotateX(0deg);
+    transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+}
+
+[data-testid="stForm"]:hover {
+    transform: perspective(1000px) translateZ(20px) rotateX(2deg);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* 3. 3D Push Button Effect */
+div.stButton > button {
+    background: linear-gradient(to right, #ff416c, #ff4b2b);
+    color: white !important;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 24px;
+    box-shadow: 0 6px #8b0000; /* Dark red bottom shadow for 3D effect */
+    transition: all 0.1s ease;
+    width: 100%;
+}
+
+div.stButton > button:active {
+    box-shadow: 0 2px #8b0000;
+    transform: translateY(4px); /* Pushes the button down */
+}
+
+div.stButton > button:hover {
+    filter: brightness(1.2);
+}
+
+/* Make text readable on dark background */
+h1, h2, h3, p, label {
+    color: white !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+</style>
+"""
+st.markdown(page_bg_css, unsafe_allow_html=True)
+# --------------------------------------
 
 # Load the trained model and encoders
 @st.cache_resource
@@ -40,7 +106,7 @@ with st.form("loan_form"):
         loan_amount_term = st.number_input("Loan Amount Term (Days)", value=360.0)
         credit_history = st.selectbox("Credit History", [1.0, 0.0], format_func=lambda x: "Good (1.0)" if x == 1.0 else "Bad (0.0)")
 
-    submit_button = st.form_submit_button(label="Predict Loan Status")
+    submit_button = st.form_submit_button(label="🚀 Predict Loan Status")
 
 if submit_button:
     # 1. Structure the input data into a dataframe
@@ -64,5 +130,6 @@ if submit_button:
     st.markdown("---")
     if result[0] == 'Y':
         st.success("🎉 Congratulations! The loan is predicted to be **APPROVED**.")
+        st.balloons() # Adds a nice built-in Streamlit animation
     else:
         st.error("🚫 Sorry. The loan is predicted to be **REJECTED**.")
